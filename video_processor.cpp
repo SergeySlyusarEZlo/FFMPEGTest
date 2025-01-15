@@ -14,10 +14,18 @@ VideoProcessor::~VideoProcessor() {
 bool VideoProcessor::open(const std::string &inputFile) {
     avformat_network_init();
 
-    if (avformat_open_input(&formatCtx, inputFile.c_str(), nullptr, nullptr) != 0) {
-        std::cerr << "Couldn't open input file" << std::endl;
+    AVDictionary *options = nullptr;
+
+    av_dict_set(&options, "rtsp_transport", "tcp", 0);
+    av_dict_set(&options, "timeout", "10000000", 0);
+
+    if (avformat_open_input(&formatCtx, inputFile.c_str(), nullptr, &options) != 0) {
+        std::cerr << "Could not open input file: " << inputFile << std::endl;
+        av_dict_free(&options);
         return false;
     }
+
+    av_dict_free(&options);
 
     if (avformat_find_stream_info(formatCtx, nullptr) < 0) {
         std::cerr << "Couldn't find stream info" << std::endl;

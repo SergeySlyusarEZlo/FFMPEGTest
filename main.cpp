@@ -44,19 +44,24 @@ void processVideo(const std::string &inputFile, const std::string &outputFileBas
 
 int main(int argc, char *argv[]) {
     if (argc < 3) {
-        std::cerr << "Usage: " << argv[0] << " <inputThreadsNumber> <RepeatesNumber>" << std::endl << "For example: ./test-frame 6 100" << std::endl;
+        std::cerr << "Usage: " << argv[0] << " <inputThreadsNumber> <RepeatesNumber> <source file | RTSP-stream (optionally)>" << std::endl << "For example: ./test-frame 6 100" << std::endl;
         return -1;
     }
+
 
  //   av_log_set_level(AV_LOG_TRACE);
 
     printf("libavformat version: %s\n", av_version_info());
 
-    const std::string inputFile = "input.mp4"; // default source video
+    std::string inputFile = "input.mp4"; // default source video
     const std::string outputFileBase = "output"; // prefix of out snapshots
 
     int inputThreadsNumber = std::stoi(argv[1]);
     int repeatsNumber = std::stoi(argv[2]);
+
+    if (argc == 4) {
+        inputFile = argv[3];
+    }
 
     if (inputThreadsNumber <= 0 || repeatsNumber <= 0) {
         std::cerr << "Error: inputThreadsNumber and RepeatesNumber must be positive integers." << std::endl;
